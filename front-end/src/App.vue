@@ -35,7 +35,7 @@
       <router-view />
     </div>
     <div class="footer">
-      <a href="https://github.com/BYU-CS-260-Winter-2020/lab-4-museum-of-ordinary-objects-Ficus1234">GitHub</a>
+      <a href="https://github.com/Ficus1234/cp4.git">GitHub</a>
     </div>
   </div>
 </template>
@@ -82,23 +82,31 @@ body {
 }
 
 .content {
-  padding: 10px;
-  min-height: 500px;
+  width: 100vw;
 }
 
 /* Footer */
 .footer {
-  height: 50px;
-  padding: 20px 100px 0px 100px;
-  background: #e3e3e3;
-  font-size: 12px;
   display: flex;
-  justify-content: flex-start;
+  align-items: center;
+  justify-content: center;
+  position: fixed;
+  height: 60px;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  background-color: black;
+  color: white;
+  text-align: center;
 }
 
 .footer a {
-  color: #000;
+  color: orange;
   margin: 0 10px;
+}
+.footer a:hover {
+  color: white;
+  text-decoration: none;
 }
 
 h1 {

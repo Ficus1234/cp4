@@ -1,48 +1,29 @@
 <template>
 <div class="admin">
-  <h1 class="h1">The Admin Page!</h1>
   <div class="heading">
-    <div class="circle">1</div>
-    <h2 class="add-header">Add an Item</h2>
+    <h2>Was the joke that bad? Change or delete it here.</h2>
   </div>
-  <div class="add">
-    <div class="form">
-      <div class="input-box">
-        <input v-model="title" placeholder="Title">
-        <textarea v-model="description" placeholder="Description"></textarea>
+
+  <div class="image" v-for="item in items" :key="item.id">
+    <div class="box-edit">
+      <div class="information">
+        <p>{{item.description}}</p>
+        <p>submitted by: {{item.title}}</p>
       </div>
-      <input type="file" name="photo" @change="fileChanged">
-      <button @click="upload">Upload</button>
-    </div>
-    <div class="upload" v-if="addItem">
-      <div class="upload-box">
-        <h2>{{addItem.title}}</h2>
-        <img :src="addItem.path" />
-        <p>{{addItem.description}}</p>
+      <div class="pun-edit" v-if="theId === item._id">
+        <textarea v-model="findJoke.description" placeholder="Pun Here"></textarea>
+        <input v-model="findJoke.title" placeholder="Name Here">
       </div>
-    </div>
-  </div>
-  <div class="heading">
-    <div class="circle">2</div>
-    <h2>Edit/Delete an Item</h2>
-  </div>
-  <div class="edit">
-    <div class="form-2">
-      <input v-model="findTitle" placeholder="Search">
-      <div class="suggestions" v-if="suggestions.length > 0">
-        <div class="suggestion" v-for="s in suggestions" :key="s.id" @click="selectItem(s)">{{s.title}}
+      <div class="options">
+        <div class="button-1" @click="deleteItem(item)">
+          Delete
         </div>
-      </div>
-    </div>
-    <div class="selected">
-      <div class="upload-2" v-if="findItem">
-        <input v-model="findItem.title">
-        <textarea v-model="findItem.description" placeholder="Description"></textarea>
-        <img :src="findItem.path" />
-      </div>
-      <div class="actions" v-if="findItem">
-        <button @click="deleteItem(findItem)">Delete</button>
-        <button @click="editItem(findItem)">Save Changes</button>
+        <div v-if="theId !== item._id" class="button-1" @click="selectJoke(item)">
+          Edit
+        </div>
+        <div v-if="theId === item._id" class="button-1" @click="editItem(findJoke)">
+          Save
+        </div>
       </div>
     </div>
   </div>
@@ -62,6 +43,10 @@
         items: [],
         findTitle: "",
         findItem: null,
+        //new
+        findJoke: null,
+        theId: "",
+        editing: true,
       }
     },
     computed: {
@@ -79,15 +64,15 @@
       },
       async upload() {
         try {
-          const formData = new FormData();
-          formData.append('photo', this.file, this.file.name)
-          let r1 = await axios.post('/api/photos', formData);
-          let r2 = await axios.post('/api/items', {
+          //const formData = new FormData();
+          //formData.append('photo', this.file, this.file.name)
+          //let r1 = await axios.post('/api/photos', formData);
+          let kkkk = await axios.post('/api/items', {
             title: this.title,
             description: this.description,
-            path: r1.data.path
+            //path: r1.data.path
           });
-          this.addItem = r2.data;
+          this.addItem = kkkk.data;
         } catch (error) {
           console.log(error);
         }
@@ -105,10 +90,16 @@
         this.findTitle = "";
         this.findItem = item;
       },
+      //New
+      selectJoke(item) {
+        this.findJoke = item;
+        this.theId = item._id;
+        console.log("theId: " + this.theId)
+      },
       async deleteItem(item) {
         try {
           await axios.delete("/api/items/" + item._id);
-          this.findItem = null;
+          this.findJoke = null;
           this.getItems();
           return true;
         } catch (error) {
@@ -118,11 +109,12 @@
       async editItem(item) {
        try {
          await axios.put("/api/items/" + item._id, {
-           title: this.findItem.title,
-           description: this.findItem.description,
+           title: this.findJoke.title,
+           description: this.findJoke.description,
          });
-         this.findItem = null;
+         this.findJoke = null;
          this.getItems();
+         this.theId = "";
          return true;
        } catch (error) {
          console.log(error);
@@ -133,12 +125,46 @@
 </script>
 
 <style scoped>
-.input-box {
+.pun-edit {
+  display: flex;
+  align-items: center;
+}
+.information {
+  display: flex;
+  flex-direction: column;
+}
+.button-1 {
+  display: flex;
+  justify-content: center;
+  padding: 10px 20px;
+  width: 120px;
+  border-radius: 3px;
+  color: white;
+  background-color: orange;
+}
+.button-1:hover {
+  background-color: white;
+  color: orange;
+  border: 1px solid orange;
+}
+.button-1 {
+  margin: 5px 10px;
+}
+.button-1 a {
+  color: white;
+}
+.button-1 a:hover {
+  text-decoration: none;
+  color: orange;
+}
+.box-edit {
+  margin: 30px 0 75px 20px;
+}
+.options {
   display: flex;
 }
-.image h2 {
-  font-style: italic;
-  font-size: 1em;
+.input-box {
+  display: flex;
 }
 
 .h1 {
@@ -147,14 +173,8 @@
 
 .heading {
   display: flex;
-  margin-bottom: 20px;
-  margin-top: 20px;
-  width: 200px;
-}
-
-.heading h2 {
-  margin-top: 8px;
-  margin-left: 10px;
+  margin: 20px;
+  max-width: 90vw;
 }
 
 .add-header {
@@ -242,9 +262,19 @@ input {
   background-color: #5BDEFF;
   color: #fff;
 }
-@media only screen and (max-width: 515px) {
-  .input-box {
+@media only screen and (max-width: 470px) {
+  .pun-edit {
     flex-direction: column;
+  }
+  .options {
+    justify-content: center;
+  }
+  .information {
+    align-items: center;
+    text-align: center;
+  }
+  .heading h2 {
+    text-align: center;
   }
   .edit {
     flex-direction: column;
