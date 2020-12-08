@@ -3,17 +3,17 @@
     <h3>Add A Pun To Our Collection:</h3>
     <div class="form">
       <div class="input-box">
-        <textarea v-model="description" placeholder="Your Pun Here"></textarea>
+        <textarea v-model="description" placeholder="Your Pun or Joke Here"></textarea>
         <input v-model="title" placeholder="Username">
       </div>
-      <div class="upload-2" v-if="findItem">
-        <input v-model="findItem.title">
-        <textarea v-model="findItem.description" placeholder="Description"></textarea>
-        <img :src="findItem.path" />
+      <div class="upload-2" v-if="findJoke">
+        <input v-model="findJoke.title">
+        <textarea v-model="findJoke.description" placeholder="Description"></textarea>
+        <img :src="findJoke.path" />
       </div>
       <div class="button" @click="upload">Upload</div>
     </div>
-    <div class="upload" v-if="addItem">
+    <div class="upload" v-if="addTheJoke">
       <div class="upload-box">
         <p>Upload Successful!</p>
       </div>
@@ -28,21 +28,18 @@
       return {
         title: "",
         description: "",
-        addItem: null,
+        addTheJoke: null,
+        findJoke: null,
       }
     },
     methods: {
       async upload() {
         try {
-          //const formData = new FormData();
-          //formData.append('photo', this.file, this.file.name)
-          //let r1 = await axios.post('/api/photos', formData);
-          let kkkk = await axios.post('/api/items', {
+          let joke = await axios.post('/api/jokes', {
             title: this.title,
             description: this.description,
-            //path: r1.data.path
           });
-          this.addItem = kkkk.data;
+          this.addTheJoke = joke.data;
         } catch (error) {
           console.log(error);
         }

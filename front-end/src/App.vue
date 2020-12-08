@@ -26,7 +26,7 @@
             <router-link to="/admin">Admin</router-link>
           </b-nav-item>
           <b-nav-item>
-            <router-link to="/submit">Submit a Pun</router-link>
+            <router-link to="/submit">Submit a Pun or Joke</router-link>
           </b-nav-item>
         </b-navbar-nav>
       </b-collapse>

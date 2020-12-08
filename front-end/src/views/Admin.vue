@@ -4,24 +4,24 @@
     <h2>Was the joke that bad? Change or delete it here.</h2>
   </div>
 
-  <div class="image" v-for="item in items" :key="item.id">
+  <div class="image" v-for="joke in jokes" :key="joke.id">
     <div class="box-edit">
       <div class="information">
-        <p>{{item.description}}</p>
-        <p>submitted by: {{item.title}}</p>
+        <p>{{joke.description}}</p>
+        <p>submitted by: {{joke.title}}</p>
       </div>
-      <div class="pun-edit" v-if="theId === item._id">
+      <div class="pun-edit" v-if="theId === joke._id">
         <textarea v-model="findJoke.description" placeholder="Pun Here"></textarea>
         <input v-model="findJoke.title" placeholder="Name Here">
       </div>
       <div class="options">
-        <div class="button-1" @click="deleteItem(item)">
+        <div class="button-1" @click="deleteJoke(joke)">
           Delete
         </div>
-        <div v-if="theId !== item._id" class="button-1" @click="selectJoke(item)">
+        <div v-if="theId !== joke._id" class="button-1" @click="selectJoke(joke)">
           Edit
         </div>
-        <div v-if="theId === item._id" class="button-1" @click="editItem(findJoke)">
+        <div v-if="theId === joke._id" class="button-1" @click="editJoke(findJoke)">
           Save
         </div>
       </div>
@@ -38,82 +38,61 @@
       return {
         title: "",
         description: "",
-        file: null,
-        addItem: null,
-        items: [],
-        findTitle: "",
-        findItem: null,
-        //new
+        addTheJoke: null,
+        jokes: [],
+        comments: [],
         findJoke: null,
         theId: "",
         editing: true,
       }
     },
-    computed: {
-      suggestions() {
-        let items = this.items.filter(item => item.title.toLowerCase().startsWith(this.findTitle.toLowerCase()));
-        return items.sort((a, b) => a.title > b.title);
-      }
-    },
     created() {
-      this.getItems();
+      this.getJokes();
     },
     methods: {
-      fileChanged(event) {
-        this.file = event.target.files[0]
-      },
       async upload() {
         try {
-          //const formData = new FormData();
-          //formData.append('photo', this.file, this.file.name)
-          //let r1 = await axios.post('/api/photos', formData);
-          let kkkk = await axios.post('/api/items', {
+          let pun = await axios.post('/api/jokes', {
             title: this.title,
             description: this.description,
-            //path: r1.data.path
           });
-          this.addItem = kkkk.data;
+          this.addTheJoke = pun.data;
         } catch (error) {
           console.log(error);
         }
       },
-      async getItems() {
+      async getJokes() {
         try {
-          let response = await axios.get("/api/items");
-          this.items = response.data;
+          let response = await axios.get("/api/jokes");
+          this.jokes = response.data;
           return true;
         } catch (error) {
           console.log(error);
         }
       },
-      selectItem(item) {
-        this.findTitle = "";
-        this.findItem = item;
-      },
-      //New
-      selectJoke(item) {
-        this.findJoke = item;
-        this.theId = item._id;
+      selectJoke(userJoke) {
+        this.findJoke = userJoke;
+        this.theId = userJoke._id;
         console.log("theId: " + this.theId)
       },
-      async deleteItem(item) {
+      async deleteJoke(userJoke) {
         try {
-          await axios.delete("/api/items/" + item._id);
+          await axios.delete("/api/jokes/" + userJoke._id);
           this.findJoke = null;
-          this.getItems();
+          this.getJokes();
           return true;
         } catch (error) {
           console.log(error);
         }
       },
-      async editItem(item) {
+      async editJoke(userJoke) {
        try {
-         await axios.put("/api/items/" + item._id, {
+         await axios.put("/api/jokes/" + userJoke._id, {
            title: this.findJoke.title,
            description: this.findJoke.description,
          });
          this.findJoke = null;
-         this.getItems();
+         this.getJokes();
          this.theId = "";
          return true;
        } catch (error) {
