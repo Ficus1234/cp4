@@ -51,7 +51,7 @@
   h3 {
     background-color: orange;
     padding-top: 200px;
-    margin:200px 0;
+    margin-bottom: 200px;
   }
   .form {
     display: flex;
